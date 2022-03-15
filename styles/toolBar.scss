@@ -1,0 +1,96 @@
+.toolbar {
+    position: fixed;
+    background-color: #f1f1f1;
+    padding: 1.2em;
+    height: 100%;
+    //flex-direction: column;
+    //overflow: auto;
+    flex-shrink: 0;
+    border-radius: 30px 0px 0px 30px;
+  }
+  
+  .toolbar > div:first-of-type {
+    flex-grow: 1;
+  }
+  
+  .preview {
+    width: 160px;
+    height: 160px;
+    border: 2px solid black;
+    position: relative;
+  }
+  
+  .preview__brush {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    border-radius: 100%;
+  }
+  
+
+  .tool-section {
+    padding-bottom: 0.5rem;
+  }
+  
+  .tool-section--lrg {
+    padding-bottom: 1rem;
+  }
+  .btn--bottom{
+    position:absolute;                 
+    bottom:25px;                         
+    width: 80%;
+  }
+  .btn {
+    display: inline-flex;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    border: 0;
+    outline: 0;
+    border-radius: 0;
+    text-decoration: none;
+    padding: 0.5em;
+    color: #1d1d1d;
+    color: var(--color-text);
+    background-color: #bbb;
+    height: 45px;
+  }
+  
+  .btn--main {
+    background-color: hsl(211, 100%, 75%);
+    margin-bottom: 0.75rem;
+  }
+  
+  .btn--block {
+    display: flex;
+    width: 100%;
+  }
+  
+  .btn--tool {
+    background-color: #c1c1c1;
+    width: 100%;
+    height: 100%;
+    padding: 0.25em 0.3em;
+  }
+  .btn--color {
+    -webkit-appearance: none;
+    border: none;
+    width: 100%;
+    height: 28px;
+    padding: 0;
+    cursor: pointer;
+  }
+  *[disabled],
+  *[disabled] + label {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .tool-section-button {
+    position: fixed;
+    left: 133px;
+    bottom: 0px;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+  }
+  
