@@ -1,13 +1,41 @@
 import React, { useEffect, useState } from "react";
-//import io from "socket.io-client";
-
+import io from "socket.io-client";
 
 const Board = ({ color, size }) => {
-
+  const [socket, setSocket] = useState();
   const [imageData, setImageData] = useState(null);
   let timeout;
 
+  useEffect(() => {
+    const s = io("http://localhost:1338");
+    setSocket(s);
 
+    return () => {
+      s.disconnect();
+    };
+  }, []);
+  useEffect(() => {
+    if (socket == null) {
+      return;
+    }
+    socket.on("canvas-data", (data) => {
+      setImageData(data);
+      let image = new Image();
+      let canvas = document.querySelector("#board");
+      let ctx = canvas.getContext("2d");
+      image.onload = () => {
+        ctx.drawImage(image, 0, 0);
+      };
+      image.src = data;
+    });
+  }, [socket]);
+
+  useEffect(() => {
+    if (socket == null || imageData == null) {
+      return;
+    }
+    socket.emit("canvas-data", imageData);
+  }, [socket, imageData]);
   useEffect(() => {
     drawOnCanvas();
     if (imageData) {
@@ -33,20 +61,20 @@ const Board = ({ color, size }) => {
     let mouse = { x: 0, y: 0 };
     let last_mouse = { x: 0, y: 0 };
 
-    // Mouse Capturing Work 
+    // Mouse Capturing Work
     canvas.addEventListener(
       "mousemove",
       function (e) {
         last_mouse.x = mouse.x;
         last_mouse.y = mouse.y;
 
-        mouse.x = e.pageX ;
-        mouse.y = e.pageY ;
+        mouse.x = e.pageX;
+        mouse.y = e.pageY;
       },
       false
     );
 
-    //Drawing on Paint App 
+    //Drawing on Paint App
     ctx.lineWidth = size;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
