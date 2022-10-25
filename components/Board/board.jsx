@@ -1,126 +1,100 @@
 import React, { useEffect, useState } from "react";
-import io from "socket.io-client";
 
 const Board = ({ color, size }) => {
-  const [socket, setSocket] = useState();
-  const [imageData, setImageData] = useState(null);
-  let timeout;
+    useEffect(() => {
+        drawOnCanvas();
+    }, [color, size]);
 
-  useEffect(() => {
-    const s = io("http://localhost:1338");
-    setSocket(s);
+    const drawOnCanvas = () => {
+        let mousemove = document.querySelector(".position");
+        let canvas = document.querySelector("#board");
+        let ctx = canvas.getContext("2d");
+        let x = 0,
+            y = 0;
 
-    return () => {
-      s.disconnect();
+        let isDrawing = false;
+        const toolBtn = document.querySelectorAll(".btn--tool");
+        toolBtn.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const activeElement = document.getElementsByClassName("active");
+                if (activeElement.length > 0) {
+                    //activeElement[0].classList.remove("active")
+                    activeElement[0].className = activeElement[0].className.replace(
+                        " active",
+                        ""
+                    );
+                }
+                btn.classList.add("active");
+            });
+        });
+        window.addEventListener("load", () => {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        });
+        //Drawing on Paint App
+
+        ctx.strokeStyle = color;
+
+        const handleMouseDown = () => {
+            ctx.lineWidth = size;
+            ctx.lineJoin = "round";
+            ctx.lineCap = "round";
+            isDrawing = true;
+            ctx.beginPath();
+        };
+        const handleMouseMove = (e) => {
+            // mouseX = parseInt(e.clientX - offsetX);
+            // mouseY = parseInt(e.clientY - offsetY);
+            let bound = canvas.getBoundingClientRect();
+            // console.log(bound);
+            x = e.clientX - bound.left - canvas.clientLeft;
+            y = e.clientY - bound.top - canvas.clientTop;
+            mousemove.innerHTML = `${x}/${y} px`;
+            if (!isDrawing) return;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+        };
+        // const handleMouseUp = () => {};
+        // const handleMouseOut = () => {};
+
+        canvas.addEventListener(
+            "mousedown",
+            () => {
+                handleMouseDown();
+            },
+            false
+        );
+        canvas.addEventListener(
+            "mousemove",
+            function (e) {
+                handleMouseMove(e);
+            },
+            false
+        );
+
+        canvas.addEventListener(
+            "mouseup",
+            () => {
+                isDrawing = false;
+            },
+            false
+        );
+
+        canvas.addEventListener(
+            "mouseout",
+            () => {
+                mousemove.innerHTML = ``;
+                isDrawing = false;
+            },
+            false
+        );
     };
-  }, []);
-  useEffect(() => {
-    if (socket == null) {
-      return;
-    }
-    socket.on("canvas-data", (data) => {
-      setImageData(data);
-      let image = new Image();
-      let canvas = document.querySelector("#board");
-      let ctx = canvas.getContext("2d");
-      image.onload = () => {
-        ctx.drawImage(image, 0, 0);
-      };
-      image.src = data;
-    });
-  }, [socket]);
-
-  useEffect(() => {
-    if (socket == null || imageData == null) {
-      return;
-    }
-    socket.emit("canvas-data", imageData);
-  }, [socket, imageData]);
-  useEffect(() => {
-    drawOnCanvas();
-    if (imageData) {
-      let image = new Image();
-      let canvas = document.querySelector("#board");
-      let ctx = canvas.getContext("2d");
-      image.onload = () => {
-        ctx.drawImage(image, 0, 0);
-      };
-      image.src = imageData;
-    }
-  }, [color, size]);
-
-  const drawOnCanvas = () => {
-    let canvas = document.querySelector("#board");
-    let ctx = canvas.getContext("2d");
-
-    let sketch = document.querySelector("#sketch");
-    let sketch_style = getComputedStyle(sketch);
-    canvas.width = parseInt(sketch_style.getPropertyValue("width"));
-    canvas.height = parseInt(sketch_style.getPropertyValue("height"));
-
-    let mouse = { x: 0, y: 0 };
-    let last_mouse = { x: 0, y: 0 };
-
-    // Mouse Capturing Work
-    canvas.addEventListener(
-      "mousemove",
-      function (e) {
-        last_mouse.x = mouse.x;
-        last_mouse.y = mouse.y;
-
-        mouse.x = e.pageX;
-        mouse.y = e.pageY;
-      },
-      false
+    return (
+        <div className="draw-board">
+            <canvas className="board" id="board" />
+            <p className="position" />
+        </div>
     );
-
-    //Drawing on Paint App
-    ctx.lineWidth = size;
-    ctx.lineJoin = "round";
-    ctx.lineCap = "round";
-    ctx.strokeStyle = color;
-
-    canvas.addEventListener(
-      "mousedown",
-      (e) => {
-        canvas.addEventListener("mousemove", onPaint, false);
-      },
-      false
-    );
-
-    canvas.addEventListener(
-      "mouseup",
-      (e) => {
-        canvas.removeEventListener("mousemove", onPaint, false);
-      },
-      false
-    );
-
-    const onPaint = () => {
-      ctx.beginPath();
-      ctx.moveTo(last_mouse.x, last_mouse.y);
-      ctx.lineTo(mouse.x, mouse.y);
-      ctx.closePath();
-      ctx.stroke();
-
-      if (timeout !== undefined) {
-        clearTimeout(timeout);
-      }
-
-      timeout = setTimeout(() => {
-        let base64ImageData = canvas.toDataURL("image/png");
-        setImageData(base64ImageData);
-        //socket.emit("canvas-data", base64ImageData);
-      }, 1000);
-    };
-  };
-  return (
-    <>
-      <div className="sketch" id="sketch">
-        <canvas className="board" id="board"></canvas>
-      </div>
-    </>
-  );
 };
 
 export default Board;

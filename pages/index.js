@@ -1,11 +1,6 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import ToolBar from '../components/ToolBar/toolBar'
-import styles from '../styles/Home.module.css'
+import { useEffect } from "react";
+import ToolBar from "../components/ToolBar/toolBar";
 
 export default function Home() {
-  return (
-   <ToolBar/>
-
-  )
+	return <ToolBar />;
 }
