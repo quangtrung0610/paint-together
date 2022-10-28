@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import ToolBar from "../components/ToolBar/toolBar";
+import ToolBar from "../components/toolBar";
 
 export default function Home() {
 	return <ToolBar />;
