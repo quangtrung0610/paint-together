@@ -27,24 +27,19 @@ const Board = ({ color, size, cursor }) => {
 		});
 
 		const handleMouseDown = () => {
-			if (selectedTool === "fill") {
-			}
+			ctx.strokeStyle = color;
+			ctx.lineWidth = size;
 			switch (selectedTool) {
 				case "brush":
-					ctx.strokeStyle = color;
-					ctx.lineWidth = size;
 					ctx.lineJoin = "round";
 					ctx.lineCap = "round";
 					break;
 				case "pencil":
-					ctx.strokeStyle = color;
-					ctx.lineWidth = size;
 					ctx.lineJoin = "round";
 					ctx.lineCap = "round";
 					break;
 				case "fill":
 					ctx.fillStyle = color;
-					ctx.lineWidth = 1000;
 					ctx.fillRect(0, 0, canvas.width, canvas.height);
 					break;
 			}
